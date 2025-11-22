@@ -4,7 +4,7 @@ CREATE TYPE tipo_transacao AS ENUM ('RECEITA', 'DESPESA');
 
 CREATE TYPE tipo_categoria AS ENUM ('RECEITA', 'DESPESA');
 
-CREATE TABLE usuario (
+CREATE TABLE tb_usuario (
     id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE usuario (
 
 CREATE INDEX idx_usuario_email ON usuario(email);
 
-CREATE TABLE conta (
+CREATE TABLE tb_conta (
     id BIGSERIAL PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     nome VARCHAR(120) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE conta (
 CREATE INDEX idx_conta_usuario ON conta(usuario_id);
 
 
-CREATE TABLE categoria (
+CREATE TABLE tb_categoria (
     id BIGSERIAL PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     nome VARCHAR(120) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE categoria (
 CREATE INDEX idx_categoria_usuario ON categoria(usuario_id);
 
 
-CREATE TABLE transacao (
+CREATE TABLE tb_transacao (
     id BIGSERIAL PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     categoria_id BIGINT NOT NULL,
@@ -74,7 +74,7 @@ CREATE INDEX idx_transacao_categoria ON transacao(categoria_id);
 CREATE INDEX idx_transacao_conta ON transacao(conta_id);
 
 
-CREATE TABLE meta_financeira (
+CREATE TABLE tb_meta_financeira (
     id BIGSERIAL PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     nome VARCHAR(120) NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE meta_financeira (
 CREATE INDEX idx_meta_usuario ON meta_financeira(usuario_id);
 
 
-CREATE TABLE reserva (
+CREATE TABLE tb_reserva (
     id BIGSERIAL PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     nome VARCHAR(120) NOT NULL,
