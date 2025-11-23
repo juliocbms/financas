@@ -1,4 +1,4 @@
-package com.financas.julio.config;
+package com.financas.julio.controllers.exceptions;
 
 import com.financas.julio.services.exception.EmailAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +15,7 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<StandardError> resourceNotFound(EmailAlreadyExistsException e, HttpServletRequest request){
         String error = "Email Already Exists";
-        HttpStatus status =HttpStatus.NOT_FOUND;
+        HttpStatus status =HttpStatus.CONFLICT;
         StandardError err = new StandardError(Instant.now(),status.value(),error,e.getMessage(),request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }

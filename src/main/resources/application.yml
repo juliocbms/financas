@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  loggin:
+  logging:
     level:
       root: WARN
       com.financas.julio: INFO

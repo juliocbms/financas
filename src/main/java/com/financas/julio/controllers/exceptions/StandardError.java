@@ -1,4 +1,4 @@
-package com.financas.julio.config;
+package com.financas.julio.controllers.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
