@@ -6,11 +6,14 @@ import com.financas.julio.model.User;
 import com.financas.julio.repository.UserRepository;
 import com.financas.julio.services.exception.DataBaseException;
 import com.financas.julio.services.exception.EmailAlreadyExistsException;
+import com.financas.julio.services.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -44,4 +47,22 @@ public class UserService {
         }
     }
 
+    public void deleteUser(Long id){
+        logger.info("Searching for id: " + id);
+        Optional<User> idToDelete = repository.findById(id);
+        if (idToDelete.isEmpty()){
+            logger.warn("Resource Not Found with id: " + id);
+            throw new ResourceNotFoundException(id);
+        }
+        try {
+            logger.info("Resource with id "+id+ " was deleted");
+            repository.deleteById(id);
+        } catch ( IllegalArgumentException e){
+            logger.warn("Invalid arguments");
+            throw e;
+        } catch (DataIntegrityViolationException ex){
+            throw ex;
+        }
+
+    }
 }

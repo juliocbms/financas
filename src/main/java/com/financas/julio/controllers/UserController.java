@@ -7,10 +7,7 @@ import com.financas.julio.model.User;
 import com.financas.julio.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -29,5 +26,11 @@ public class UserController {
         User insertedUser = service.insertUser(userRegisterRequest);
         UserRegisterResponse response = mapper.toResponse(insertedUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        service.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
