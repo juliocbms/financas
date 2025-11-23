@@ -13,3 +13,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  loggin:
+    level:
+      root: WARN
+      com.financas.julio: INFO
