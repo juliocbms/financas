@@ -2,6 +2,8 @@ package com.financas.julio.controllers;
 
 import com.financas.julio.dto.UserRegisterRequest;
 import com.financas.julio.dto.UserRegisterResponse;
+import com.financas.julio.dto.UserUpdateRequest;
+import com.financas.julio.dto.UserUpdateResponse;
 import com.financas.julio.mappers.UserMapper;
 import com.financas.julio.model.User;
 import com.financas.julio.services.UserService;
@@ -32,5 +34,12 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id){
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserUpdateResponse> updateUSer (@RequestBody UserUpdateRequest request,@PathVariable Long id){
+        User updatedUser = service.updateUser(id, request);
+        UserUpdateResponse response = mapper.updateTOResponse(updatedUser);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
