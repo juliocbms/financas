@@ -22,17 +22,17 @@ public class User {
     private String password;
 
     @Column(name = "criado_em",nullable = true)
-    private LocalDateTime cratedAt;
+    private LocalDateTime createdAt;
 
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, LocalDateTime cratedAt) {
+    public User(Long id, String name, String email, String password, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.cratedAt = cratedAt;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -67,12 +67,12 @@ public class User {
         this.password = password;
     }
 
-    public LocalDateTime getCratedAt() {
-        return cratedAt;
+    public LocalDateTime getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCratedAt(LocalDateTime cratedAt) {
-        this.cratedAt = cratedAt;
+    public void setcreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
