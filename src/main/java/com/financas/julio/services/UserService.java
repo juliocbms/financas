@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,12 +25,14 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     private Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 
-    public UserService(UserRepository repository, UserMapper mapper) {
+    public UserService(UserRepository repository, UserMapper mapper, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -40,6 +43,7 @@ public class UserService {
         }
         User newUser = mapper.toEntity(request);
         newUser.setcreatedAt(LocalDateTime.now());
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         logger.info("Trying to register user");
         try {
             return repository.save(newUser);
@@ -84,6 +88,9 @@ public class UserService {
         try {
             logger.info("Updating user with id: " + id);
             mapper.updateToEntity(request, existingUser);
+            if (request.password() != null && !request.password().isBlank()) {
+                existingUser.setPassword(passwordEncoder.encode(request.password()));
+            }
             return repository.save(existingUser);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid arguments");
