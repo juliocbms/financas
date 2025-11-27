@@ -14,7 +14,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  logging:
-    level:
-      root: WARN
-      com.financas.julio: INFO
+logging:
+  level:
+    root: WARN
+    com.financas.julio: INFO
+
+api:
+  security:
+    token:
+      secret: meu-segredo-super-secreto-e-longo-para-gerar-tokens
