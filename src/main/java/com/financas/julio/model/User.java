@@ -4,9 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_usuario")
@@ -28,6 +26,12 @@ public class User implements UserDetails {
     @Column(name = "criado_em",nullable = true)
     private LocalDateTime createdAt;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tb_user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
+
     public User()  {
     }
 
@@ -37,6 +41,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
+
     }
 
     public Long getId() {
@@ -75,6 +80,22 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return "";
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
