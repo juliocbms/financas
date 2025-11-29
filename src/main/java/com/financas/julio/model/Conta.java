@@ -32,9 +32,6 @@ public class Conta {
     @Column(name = "saldo_atual", precision = 12, scale = 2)
     private BigDecimal saldoAtual = BigDecimal.ZERO;
 
-    @Column(name = "criado_em")
-    private LocalDateTime createAt;
-
     @CreationTimestamp
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -53,7 +50,6 @@ public class Conta {
         this.tipoConta = tipoConta;
         this.saldoInicial = saldoInicial;
         this.saldoAtual = saldoAtual;
-        this.createAt = createAt;
         this.criadoEm = criadoEm;
         this.atualizadoEm = atualizadoEm;
     }
@@ -104,14 +100,6 @@ public class Conta {
 
     public void setSaldoAtual(BigDecimal saldoAtual) {
         this.saldoAtual = saldoAtual;
-    }
-
-    public LocalDateTime getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
     }
 
     public LocalDateTime getCriadoEm() {
