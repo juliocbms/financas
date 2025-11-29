@@ -9,13 +9,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ContaMapper {
 
-    @Mapping(target = "usuario", ignore = true)
+    @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "saldoAtual", source = "saldoInicial")
     Conta toEntity(ContaRegisterRequest request);
 
-    @Mapping(source = "usuario.id", target = "usuarioId")
+    @Mapping(source = "user.id", target = "usuarioId")
     ContaResponse toResponse(Conta conta);
 }
