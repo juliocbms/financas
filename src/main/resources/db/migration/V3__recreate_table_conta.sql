@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS tb_conta;
+DROP TABLE IF EXISTS tb_conta CASCADE;
 DROP TYPE IF EXISTS tipo_conta;
+
 
 
 CREATE TABLE tb_conta (
