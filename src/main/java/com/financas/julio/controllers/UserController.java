@@ -1,10 +1,10 @@
 package com.financas.julio.controllers;
 
 import com.financas.julio.config.TokenConfig;
-import com.financas.julio.dto.*;
+import com.financas.julio.dto.userDTO.*;
 import com.financas.julio.mappers.UserMapper;
 import com.financas.julio.model.User;
-import com.financas.julio.services.UserService;
+import com.financas.julio.services.UserServices.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request,@PathVariable Long id){
+    public ResponseEntity<UserUpdateResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request, @PathVariable Long id){
         User updatedUser = service.updateUser(id, request);
         UserUpdateResponse response = mapper.updateTOResponse(updatedUser);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);

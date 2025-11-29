@@ -1,4 +1,4 @@
-package com.financas.julio.dto;
+package com.financas.julio.dto.userDTO;
 
 import java.time.LocalDateTime;
 

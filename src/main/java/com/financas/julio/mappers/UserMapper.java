@@ -1,10 +1,10 @@
 package com.financas.julio.mappers;
 
-import com.financas.julio.dto.UserRegisterRequest;
-import com.financas.julio.dto.UserRegisterResponse;
+import com.financas.julio.dto.userDTO.UserRegisterRequest;
+import com.financas.julio.dto.userDTO.UserRegisterResponse;
 
-import com.financas.julio.dto.UserUpdateRequest;
-import com.financas.julio.dto.UserUpdateResponse;
+import com.financas.julio.dto.userDTO.UserUpdateRequest;
+import com.financas.julio.dto.userDTO.UserUpdateResponse;
 import com.financas.julio.model.User;
 import org.mapstruct.*;
 

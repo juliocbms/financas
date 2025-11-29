@@ -1,4 +1,4 @@
-package com.financas.julio.services;
+package com.financas.julio.services.UserServices;
 
 import com.financas.julio.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

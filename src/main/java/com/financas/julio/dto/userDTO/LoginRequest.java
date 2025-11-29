@@ -1,4 +1,4 @@
-package com.financas.julio.dto;
+package com.financas.julio.dto.userDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

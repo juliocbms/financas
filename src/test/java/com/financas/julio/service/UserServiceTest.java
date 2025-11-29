@@ -1,11 +1,11 @@
 package com.financas.julio.service;
 
-import com.financas.julio.dto.UserRegisterRequest;
-import com.financas.julio.dto.UserUpdateRequest;
+import com.financas.julio.dto.userDTO.UserRegisterRequest;
+import com.financas.julio.dto.userDTO.UserUpdateRequest;
 import com.financas.julio.mappers.UserMapper;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.UserRepository;
-import com.financas.julio.services.UserService;
+import com.financas.julio.services.UserServices.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

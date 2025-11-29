@@ -1,7 +1,4 @@
-package com.financas.julio.dto;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+package com.financas.julio.dto.userDTO;
 
 public record UserUpdateResponse(Long id,
                                  String name,

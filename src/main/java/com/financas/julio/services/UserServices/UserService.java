@@ -1,12 +1,10 @@
-package com.financas.julio.services;
+package com.financas.julio.services.UserServices;
 
-import com.financas.julio.dto.UserRegisterRequest;
-import com.financas.julio.dto.UserUpdateRequest;
-import com.financas.julio.dto.UserUpdateResponse;
+import com.financas.julio.dto.userDTO.UserRegisterRequest;
+import com.financas.julio.dto.userDTO.UserUpdateRequest;
 import com.financas.julio.mappers.UserMapper;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.UserRepository;
-import com.financas.julio.services.exception.DataBaseException;
 import com.financas.julio.services.exception.EmailAlreadyExistsException;
 import com.financas.julio.services.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 @Service
