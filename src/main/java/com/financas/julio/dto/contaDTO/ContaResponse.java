@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record ContaResponse(Long id,
                             Long usuarioId,
-                            String nome,
+                            String name,
                             String tipoConta,
                             BigDecimal saldoAtual,
                             @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")

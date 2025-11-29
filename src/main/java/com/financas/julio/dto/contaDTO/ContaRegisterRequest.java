@@ -12,7 +12,7 @@ public record ContaRegisterRequest(@NotNull(message = "O ID do usuário é obrig
 
                                    @NotBlank(message = "O nome da conta não pode estar vazio")
                                    @Size(min = 3, max = 120, message = "O nome deve ter entre 3 e 120 caracteres")
-                                   String nome,
+                                   String name,
 
                                    @NotBlank(message = "O tipo da conta não pode estar vazio")
                                    @Size(max = 100, message = "O tipo da conta deve ter no máximo 100 caracteres")
