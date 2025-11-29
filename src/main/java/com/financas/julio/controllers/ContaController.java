@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/contas")
 public class ContaController {
@@ -41,5 +43,12 @@ public class ContaController {
         Conta updateAccount = contaService.updateAccount(id, request);
         ContaResponse response = mapper.toResponse(updateAccount);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<ContaResponse>> accountsForUser(@Valid @PathVariable Long usuarioId){
+        List<Conta> listaConta = contaService.myAccounts(usuarioId);
+        List<ContaResponse> response = mapper.toResponseList(listaConta);
+        return ResponseEntity.ok(response);
     }
 }
