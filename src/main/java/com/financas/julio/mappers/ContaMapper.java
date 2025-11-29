@@ -6,6 +6,8 @@ import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.model.Conta;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ContaMapper {
 
@@ -28,5 +30,5 @@ public interface ContaMapper {
     @Mapping(target = "atualizadoEm", ignore = true)
     Conta updateToEntity(ContaUpdateRequest request, @MappingTarget Conta entity);
 
-
+    List<ContaResponse> toResponseList(List<Conta> contas);
 }
