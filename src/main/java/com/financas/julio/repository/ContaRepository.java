@@ -4,4 +4,8 @@ import com.financas.julio.model.Conta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContaRepository extends JpaRepository<Conta,Long> {
+
+    boolean existsByUserIdAndNameIgnoreCase(Long userId, String name);
+
+    long countByUserId(Long userId);
 }
