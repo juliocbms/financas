@@ -1,6 +1,7 @@
 package com.financas.julio.services.ContaServices;
 
 import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
+import com.financas.julio.dto.contaDTO.ContaResponse;
 import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.mappers.ContaMapper;
 import com.financas.julio.model.Conta;
@@ -15,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ContaService {
@@ -77,6 +81,11 @@ public class ContaService {
             logger.error("Data integrity violation", ex);
             throw ex;
         }
+    }
+
+    public List<Conta> myAccounts( Long usuarioId){
+        validarUsuarioExiste(usuarioId);
+        return contaRepository.findByUserId(usuarioId);
     }
 
 
