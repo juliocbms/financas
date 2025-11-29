@@ -1,5 +1,6 @@
 package com.financas.julio.model;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -23,6 +24,7 @@ public class User implements UserDetails {
     @Column(name = "senha_hash", nullable = false)
     private String password;
 
+    @UpdateTimestamp
     @Column(name = "criado_em",nullable = true)
     private LocalDateTime createdAt;
 
