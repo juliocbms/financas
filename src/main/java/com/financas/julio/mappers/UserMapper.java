@@ -4,7 +4,7 @@ import com.financas.julio.dto.userDTO.UserRegisterRequest;
 import com.financas.julio.dto.userDTO.UserRegisterResponse;
 
 import com.financas.julio.dto.userDTO.UserUpdateRequest;
-import com.financas.julio.dto.userDTO.UserUpdateResponse;
+
 import com.financas.julio.model.User;
 import org.mapstruct.*;
 
@@ -21,5 +21,5 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     User updateToEntity(UserUpdateRequest request, @MappingTarget User entity);
 
-    UserUpdateResponse updateTOResponse(User user);
+
 }

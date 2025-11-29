@@ -2,9 +2,9 @@ package com.financas.julio.mappers;
 
 import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
 import com.financas.julio.dto.contaDTO.ContaResponse;
+import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.model.Conta;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ContaMapper {
@@ -18,4 +18,15 @@ public interface ContaMapper {
 
     @Mapping(source = "user.id", target = "usuarioId")
     ContaResponse toResponse(Conta conta);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "saldoInicial", ignore = true)
+    @Mapping(target = "saldoAtual", ignore = true)
+    @Mapping(target = "criadoEm", ignore = true)
+    @Mapping(target = "atualizadoEm", ignore = true)
+    Conta updateToEntity(ContaUpdateRequest request, @MappingTarget Conta entity);
+
+
 }
