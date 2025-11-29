@@ -53,9 +53,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request, @PathVariable Long id){
+    public ResponseEntity<UserRegisterResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request, @PathVariable Long id){
         User updatedUser = service.updateUser(id, request);
-        UserUpdateResponse response = mapper.updateTOResponse(updatedUser);
+        UserRegisterResponse response = mapper.toResponse(updatedUser);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
