@@ -11,5 +11,7 @@ public record ContaResponse(Long id,
                             String tipoConta,
                             BigDecimal saldoAtual,
                             @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-                            LocalDateTime criadoEm) {
+                            LocalDateTime criadoEm,
+                            @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+                            LocalDateTime atualizadoEm) {
 }
