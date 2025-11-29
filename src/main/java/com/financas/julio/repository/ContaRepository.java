@@ -1,4 +1,7 @@
 package com.financas.julio.repository;
 
-public interface ContaRepository {
+import com.financas.julio.model.Conta;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ContaRepository extends JpaRepository<Conta,Long> {
 }
