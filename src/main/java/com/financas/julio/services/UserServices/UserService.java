@@ -53,12 +53,7 @@ public class UserService {
     }
 
     public void deleteUser(Long id){
-        logger.info("Searching for id: " + id);
-        User existingUser = repository.findById(id)
-                .orElseThrow(() -> {
-                    logger.warn("Resource Not Found with id: " + id);
-                    return new ResourceNotFoundException(id);
-                });
+        User existingUser = findUserOrThrow(id);
         if (existingUser.getId() == null){
             logger.warn("Resource Not Found with id: " + id);
             throw new ResourceNotFoundException(id);
@@ -76,12 +71,7 @@ public class UserService {
     }
 
     public User updateUser(Long id, UserUpdateRequest request) {
-        logger.info("Searching for id: " + id);
-        User existingUser = repository.findById(id)
-                .orElseThrow(() -> {
-                    logger.warn("Resource Not Found with id: " + id);
-                    return new ResourceNotFoundException(id);
-                });
+        User existingUser = findUserOrThrow(id);
         try {
             logger.info("Updating user with id: " + id);
             mapper.updateToEntity(request, existingUser);
@@ -100,4 +90,12 @@ public class UserService {
     }
 
 
+    private User findUserOrThrow(Long id) {
+        logger.info("Searching for user with id: {}", id);
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("User not found with id: {}", id);
+                    return new ResourceNotFoundException(id);
+                });
+    }
 }
