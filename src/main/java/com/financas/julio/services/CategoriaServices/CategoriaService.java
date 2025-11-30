@@ -5,7 +5,6 @@ import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
-import com.financas.julio.model.Conta;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.CategoriaRepository;
 import com.financas.julio.repository.ContaRepository;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaService {
@@ -38,6 +38,7 @@ public class CategoriaService {
     }
 
 
+    @Transactional
     public Categoria insertCategoria(CategoriaRegisterRequest request){
         validarUsuarioExiste(request.usuarioId());
         validarNomeDuplicado(request.usuarioId(), request.name());
@@ -57,6 +58,8 @@ public class CategoriaService {
         categoriaRepository.delete(categoria);
     }
 
+
+    @Transactional
     public Categoria updateSelfCategoria(Long categoriaId, CategoriaUpdateRequest request, Long usuarioLogadoId){
         Categoria categoria = buscarCategoriaValidandoDono(categoriaId, usuarioLogadoId);
         if (request.name() != null && !request.name().equals(categoria.getName())) {
@@ -64,6 +67,11 @@ public class CategoriaService {
         }
         mapper.updateToEntity(request, categoria);
         return categoriaRepository.save(categoria);
+    }
+
+    public Categoria findById(Long categoriaId, Long usuarioId){
+        Categoria categoria = buscarCategoriaValidandoDono(categoriaId,usuarioId);
+       return categoriaRepository.findById(categoriaId).orElseThrow(() -> new ResourceNotFoundException(categoriaId));
     }
 
     public List<CategoriaResponse> listarCategorias(Long userId) {

@@ -12,9 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/categoria")
+@RequestMapping("/categorias")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
@@ -41,15 +42,22 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> atualizar( @PathVariable Long id, @RequestParam Long usuarioId,@RequestBody CategoriaUpdateRequest request) {
+    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @RequestParam Long usuarioId,@RequestBody CategoriaUpdateRequest request) {
         Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, usuarioId);
         CategoriaResponse response = mapper.toResponse(updatedCategoria);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar( @PathVariable Long id, @RequestParam Long usuarioId) {
+    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @RequestParam Long usuarioId) {
         categoriaService.deleteCategoria(id, usuarioId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @RequestParam Long usuarioId){
+        Categoria categoria = categoriaService.findById(id,usuarioId);
+        CategoriaResponse response = mapper.toResponse(categoria);
+        return ResponseEntity.ok(response);
     }
 }
