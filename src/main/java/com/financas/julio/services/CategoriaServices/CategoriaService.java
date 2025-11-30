@@ -2,6 +2,7 @@ package com.financas.julio.services.CategoriaServices;
 
 import com.financas.julio.dto.categoriaDTO.CategoriaRegisterRequest;
 import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
+import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
 import com.financas.julio.model.Conta;
@@ -11,10 +12,12 @@ import com.financas.julio.repository.ContaRepository;
 import com.financas.julio.repository.UserRepository;
 import com.financas.julio.services.ContaServices.ContaService;
 import com.financas.julio.services.exception.RegraNegocioException;
+import com.financas.julio.services.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -47,6 +50,22 @@ public class CategoriaService {
         return categoriaRepository.save(categoria);
     }
 
+    @Transactional
+    public void deleteCategoria(Long categoriaId, Long usuarioLogadoId) {
+        Categoria categoria = buscarCategoriaValidandoDono(categoriaId, usuarioLogadoId);
+
+        categoriaRepository.delete(categoria);
+    }
+
+    public Categoria updateSelfCategoria(Long categoriaId, CategoriaUpdateRequest request, Long usuarioLogadoId){
+        Categoria categoria = buscarCategoriaValidandoDono(categoriaId, usuarioLogadoId);
+        if (request.name() != null && !request.name().equals(categoria.getName())) {
+            validarNomeDuplicado(usuarioLogadoId, request.name());
+        }
+        mapper.updateToEntity(request, categoria);
+        return categoriaRepository.save(categoria);
+    }
+
     public List<CategoriaResponse> listarCategorias(Long userId) {
         List<Categoria> categorias = categoriaRepository.findAllByUserIdOrPublic(userId);
         return mapper.toResponseList(categorias);
@@ -62,5 +81,20 @@ public class CategoriaService {
         if (categoriaRepository.existsByUserIdAndNameIgnoreCase(usuarioId, nome)) {
             throw new RegraNegocioException("Você já possui uma categoria chamada '" + nome + "'");
         }
+    }
+
+    private Categoria buscarCategoriaValidandoDono(Long categoriaId, Long usuarioLogadoId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException(categoriaId));
+
+        if (categoria.getUser() == null) {
+            throw new RegraNegocioException("Você não tem permissão para alterar ou excluir categorias padrão do sistema.");
+        }
+
+        if (!categoria.getUser().getId().equals(usuarioLogadoId)) {
+            throw new RegraNegocioException("Esta categoria pertence a outro usuário e você não pode mexer nela.");
+        }
+
+        return categoria;
     }
 }

@@ -2,6 +2,7 @@ package com.financas.julio.controllers;
 
 import com.financas.julio.dto.categoriaDTO.CategoriaRegisterRequest;
 import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
+import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
 import com.financas.julio.services.CategoriaServices.CategoriaService;
@@ -37,5 +38,18 @@ public class CategoriaController {
         List<CategoriaResponse> categorias = categoriaService.listarCategorias(usuarioId);
 
         return ResponseEntity.ok(categorias);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoriaResponse> atualizar( @PathVariable Long id, @RequestParam Long usuarioId,@RequestBody CategoriaUpdateRequest request) {
+        Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, usuarioId);
+        CategoriaResponse response = mapper.toResponse(updatedCategoria);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar( @PathVariable Long id, @RequestParam Long usuarioId) {
+        categoriaService.deleteCategoria(id, usuarioId);
+        return ResponseEntity.noContent().build();
     }
 }
