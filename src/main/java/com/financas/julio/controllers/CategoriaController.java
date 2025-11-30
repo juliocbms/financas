@@ -8,10 +8,9 @@ import com.financas.julio.services.CategoriaServices.CategoriaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/categoria")
@@ -30,5 +29,13 @@ public class CategoriaController {
         Categoria inserteddCategoria = categoriaService.insertCategoria(request);
         CategoriaResponse response = mapper.toResponse(inserteddCategoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<CategoriaResponse>> listarPorUsuario(@PathVariable Long usuarioId) {
+
+        List<CategoriaResponse> categorias = categoriaService.listarCategorias(usuarioId);
+
+        return ResponseEntity.ok(categorias);
     }
 }

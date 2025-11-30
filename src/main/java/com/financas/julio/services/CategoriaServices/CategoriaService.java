@@ -1,6 +1,7 @@
 package com.financas.julio.services.CategoriaServices;
 
 import com.financas.julio.dto.categoriaDTO.CategoriaRegisterRequest;
+import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
 import com.financas.julio.model.Conta;
@@ -14,6 +15,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CategoriaService {
@@ -42,6 +45,11 @@ public class CategoriaService {
         categoria.setUser(user);
         logger.info("Trying to register a category");
         return categoriaRepository.save(categoria);
+    }
+
+    public List<CategoriaResponse> listarCategorias(Long userId) {
+        List<Categoria> categorias = categoriaRepository.findAllByUserIdOrPublic(userId);
+        return mapper.toResponseList(categorias);
     }
 
     private void validarUsuarioExiste(Long usuarioId) {
