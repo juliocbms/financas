@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TransacaoService {
@@ -61,6 +63,15 @@ public class TransacaoService {
 
         logger.info("Registering a new transaction for user: {}", request.usuarioId());
         return transacaoRepository.save(transacao);
+    }
+
+    public Transacao finById(Long id, Long usuarioId){
+        buscarTransacaoValidandoDono(id,usuarioId);
+        return transacaoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    public List<Transacao> findAllByUSerId(Long usuarioId){
+        return transacaoRepository.findAllByUSerId(usuarioId);
     }
 
     @Transactional
