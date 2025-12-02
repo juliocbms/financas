@@ -22,5 +22,5 @@ public interface CategoriaMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
-    void updateToEntity(CategoriaUpdateRequest request, @MappingTarget Categoria entity);
+    Categoria updateToEntity(CategoriaUpdateRequest request, @MappingTarget Categoria entity);
 }
