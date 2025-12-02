@@ -1,4 +1,7 @@
 package com.financas.julio.repository;
 
-public interface TransacaoRepository {
+import com.financas.julio.model.Transacao;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 }
