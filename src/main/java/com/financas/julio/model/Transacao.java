@@ -38,7 +38,7 @@ public class Transacao {
     private BigDecimal valor;
 
     @Column(nullable = false)
-    private LocalDateTime data;
+    private LocalDate data;
 
     @Column(columnDefinition = "TEXT")
     private String titulo;
@@ -58,7 +58,7 @@ public class Transacao {
     public Transacao() {
     }
 
-    public Transacao(Long id, User user, Conta conta, Categoria categoria, TipoTransacao tipo, BigDecimal valor, LocalDateTime data, String titulo, String descricao, LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
+    public Transacao(Long id, User user, Conta conta, Categoria categoria, TipoTransacao tipo, BigDecimal valor, LocalDate data, String titulo, String descricao, LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
         this.id = id;
         this.user = user;
         this.conta = conta;
@@ -120,11 +120,11 @@ public class Transacao {
         this.valor = valor;
     }
 
-    public LocalDateTime getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(LocalDateTime data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 
