@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -38,10 +39,24 @@ public class ContaController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/usuario/total/{usuarioId}")
+    public ResponseEntity<BigDecimal> getSaldoTotalByUserId(@Valid @PathVariable Long usuarioId){
+        BigDecimal saldoTotal = contaService.getSaldoTotal(usuarioId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(saldoTotal);
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<ContaResponse> updateAccount (@Valid @RequestBody ContaUpdateRequest request, @PathVariable Long id){
         Conta updateAccount = contaService.updateAccount(id, request);
         ContaResponse response = mapper.toResponse(updateAccount);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ContaResponse> findById (@Valid @PathVariable Long id){
+        Conta findedConta = contaService.findById(id);
+        ContaResponse response = mapper.toResponse(findedConta);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
