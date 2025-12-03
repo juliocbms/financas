@@ -58,4 +58,11 @@ public class UserController {
         UserRegisterResponse response = mapper.toResponse(updatedUser);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+
+    @GetMapping("/me/{id}")
+    public ResponseEntity<UserRegisterResponse> findById(@Valid @PathVariable Long id){
+        User findedUser = service.findById(id);
+        UserRegisterResponse response = mapper.toResponse(findedUser);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
 }
