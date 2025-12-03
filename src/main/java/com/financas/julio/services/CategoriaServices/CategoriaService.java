@@ -70,8 +70,12 @@ public class CategoriaService {
     }
 
     public Categoria findById(Long categoriaId, Long usuarioId){
-        Categoria categoria = buscarCategoriaValidandoDono(categoriaId,usuarioId);
+        buscarCategoriaValidandoDono(categoriaId,usuarioId);
        return categoriaRepository.findById(categoriaId).orElseThrow(() -> new ResourceNotFoundException(categoriaId));
+    }
+
+    public List<Categoria> findByName(Long usuarioId, String name) {
+        return categoriaRepository.findCategoriaByName(usuarioId, name);
     }
 
     public List<CategoriaResponse> listarCategorias(Long userId) {
