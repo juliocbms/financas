@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -65,6 +66,14 @@ public class ContaService {
         } catch (DataIntegrityViolationException ex){
             throw ex;
         }
+    }
+
+    public Conta findById(Long id){
+        return contaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    public BigDecimal getSaldoTotal(Long userId){
+        return contaRepository.getSaldoTotalByUserId(userId);
     }
 
     public Conta updateAccount(Long id, ContaUpdateRequest request){
