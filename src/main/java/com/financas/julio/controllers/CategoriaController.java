@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/categorias")
@@ -52,6 +53,17 @@ public class CategoriaController {
     public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @RequestParam Long usuarioId) {
         categoriaService.deleteCategoria(id, usuarioId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<CategoriaResponse>> findCategoriaByName(@RequestParam Long usuarioId, @RequestParam String name){
+
+        List<Categoria> categorias = categoriaService.findByName(usuarioId, name);
+        List<CategoriaResponse> response = categorias.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
