@@ -70,6 +70,10 @@ public class UserService {
 
     }
 
+    public User findById(Long id){
+      return findUserOrThrow(id);
+    }
+
     public User updateUser(Long id, UserUpdateRequest request) {
         User existingUser = findUserOrThrow(id);
         try {
