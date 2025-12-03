@@ -12,4 +12,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     @Query("SELECT c FROM Categoria c WHERE c.user.id = :userId OR c.user IS NULL")
     List<Categoria> findAllByUserIdOrPublic(@Param("userId") Long userId);
+
+    @Query("SELECT c FROM Categoria c WHERE (c.user.id = :userId OR c.user IS NULL) AND LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Categoria> findCategoriaByName(@Param("userId") Long userId, @Param("name") String name);
 }
