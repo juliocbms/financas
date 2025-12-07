@@ -34,6 +34,9 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Conta> contas = new ArrayList<>();
+
     public User()  {
     }
 
@@ -98,6 +101,14 @@ public class User implements UserDetails {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Conta> getContas() {
+        return contas;
+    }
+
+    public void setContas(List<Conta> contas) {
+        this.contas = contas;
     }
 
     @Override

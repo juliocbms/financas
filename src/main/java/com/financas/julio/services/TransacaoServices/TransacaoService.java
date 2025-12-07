@@ -39,13 +39,18 @@ public class TransacaoService {
     }
 
     @Transactional
-    public Transacao insertTransacao(TransacaoRegisterRequest request) {
+    public Transacao insertTransacao(TransacaoRegisterRequest request, Long usuarioId) {
+        Conta conta = contaRepository.findById(request.contaId())
+                .orElseThrow(() -> new ResourceNotFoundException(request.contaId()));
+
+        if (!conta.getUser().getId().equals(usuarioId)) {
+            throw new RegraNegocioException("Essa conta não pertence a você.");
+        }
         Transacao transacao = mapper.toEntity(request);
+
         if (request.tipo() != TipoTransacao.TRANSFERENCIA && request.categoriaId() == null) {
             throw new RegraNegocioException("A categoria é obrigatória para Receitas e Despesas.");
         }
-        Conta conta = contaRepository.findById(request.contaId())
-                .orElseThrow(() -> new ResourceNotFoundException(request.contaId()));
         if (request.categoriaId() != null) {
             if (!categoriaRepository.existsById(request.categoriaId())) {
                 throw new ResourceNotFoundException(request.categoriaId());
@@ -53,21 +58,19 @@ public class TransacaoService {
             Categoria categoria = categoriaRepository.getReferenceById(request.categoriaId());
             transacao.setCategoria(categoria);
         }
-        User user = userRepository.getReferenceById(request.usuarioId());
+
+        User user = userRepository.getReferenceById(usuarioId);
         transacao.setUser(user);
 
         atualizarSaldoDaConta(conta, transacao.getValor(), transacao.getTipo());
         transacao.setConta(conta);
-
         contaRepository.save(conta);
 
-        logger.info("Registering a new transaction for user: {}", request.usuarioId());
         return transacaoRepository.save(transacao);
     }
 
-    public Transacao finById(Long id, Long usuarioId){
-        buscarTransacaoValidandoDono(id,usuarioId);
-        return transacaoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    public Transacao findById(Long id, Long usuarioId){
+        return buscarTransacaoValidandoDono(id, usuarioId);
     }
 
     public List<Transacao> findAllByUSerId(Long usuarioId){
@@ -84,6 +87,14 @@ public class TransacaoService {
     @Transactional
     public void deleteSelfTransacao(Long transacaoId, Long usuarioId){
         Transacao transacao = buscarTransacaoValidandoDono(transacaoId,usuarioId);
+        Conta conta = transacao.getConta();
+        if (transacao.getTipo() == TipoTransacao.RECEITA) {
+            conta.setSaldoAtual(conta.getSaldoAtual().subtract(transacao.getValor()));
+        } else {
+            conta.setSaldoAtual(conta.getSaldoAtual().add(transacao.getValor()));
+        }
+
+        contaRepository.save(conta);
         transacaoRepository.delete(transacao);
 
     }

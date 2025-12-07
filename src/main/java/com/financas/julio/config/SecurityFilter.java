@@ -1,5 +1,7 @@
 package com.financas.julio.config;
 
+import com.financas.julio.model.User;
+import com.financas.julio.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private TokenConfig tokenConfig;
 
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -31,11 +36,13 @@ public class SecurityFilter extends OncePerRequestFilter {
             Optional<JWTUserData> optUser = tokenConfig.validateToken(token);
             if (optUser.isPresent()){
                 JWTUserData userData = optUser.get();
-                List<SimpleGrantedAuthority> authorities = userData.roles().stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userData.userId(),null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                User user = userRepository.findById(userData.userId()).orElse(null);
+                if (user != null) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
             filterChain.doFilter(request,response);
         }

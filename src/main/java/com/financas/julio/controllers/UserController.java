@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,23 +47,23 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
-        service.deleteUser(id);
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteUser( @AuthenticationPrincipal User user){
+        service.deleteUser(user.getId());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserRegisterResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request, @PathVariable Long id){
-        User updatedUser = service.updateUser(id, request);
+    @PutMapping("/me")
+    public ResponseEntity<UserRegisterResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request,  @AuthenticationPrincipal User user){
+        User updatedUser = service.updateUser(user.getId(), request);
         UserRegisterResponse response = mapper.toResponse(updatedUser);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/me/{id}")
-    public ResponseEntity<UserRegisterResponse> findById(@Valid @PathVariable Long id){
-        User findedUser = service.findById(id);
+    @GetMapping("/me")
+    public ResponseEntity<UserRegisterResponse> findById(@Valid @AuthenticationPrincipal User user){
+        User findedUser = service.findById(user.getId());
         UserRegisterResponse response = mapper.toResponse(findedUser);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.ok(response);
     }
 }

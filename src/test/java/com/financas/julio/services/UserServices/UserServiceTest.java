@@ -1,13 +1,14 @@
-package com.financas.julio.service;
+package com.financas.julio.services.UserServices;
 
 import com.financas.julio.dto.userDTO.UserRegisterRequest;
 import com.financas.julio.dto.userDTO.UserUpdateRequest;
 import com.financas.julio.mappers.UserMapper;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.UserRepository;
-import com.financas.julio.services.UserServices.UserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,29 +19,33 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.mockito.Mockito.when;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @InjectMocks
     private UserService service;
 
     @Mock
-    private UserRepository repository;
+    UserRepository repository;
 
     @Mock
-    private UserMapper userMapper;
+    UserMapper userMapper;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    PasswordEncoder passwordEncoder;
 
+    @BeforeEach
+    void setUp() {
+    }
 
     @Test
-    void insertUser_WhenDataIsValid_ShouldInsertSuccessfully() {
-        UserRegisterRequest request = new UserRegisterRequest(
-                "julio",
+    void insertUser() {
+        UserRegisterRequest request = new UserRegisterRequest( "julio",
                 "julio@email.com",
-                "1234"
-        );
+                "1234");
 
         User userEntity = new User(
                 null,
@@ -74,11 +79,11 @@ public class UserServiceTest {
         Mockito.verify(userMapper).toEntity(request);
         Mockito.verify(passwordEncoder).encode("1234");
         Mockito.verify(repository).save(Mockito.any(User.class));
+
     }
 
-
     @Test
-    void deleteUser_WhenIdExists_ShouldDeleteSuccessfully() {
+    void deleteUser() {
         Long id = 1L;
 
         User existingUser = new User(id, "julio", "email", "123", LocalDateTime.now());
@@ -91,16 +96,27 @@ public class UserServiceTest {
         Mockito.verify(repository).deleteById(id);
     }
 
+    @Test
+    void findById() {
+        Long id = 1L;
 
+        User existingUser = new User(id, "julio", "email", "123", LocalDateTime.now());
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingUser));
+
+        service.findById(id);
+
+        Mockito.verify(repository).findById(id);
+
+    }
 
     @Test
-    void updateUser_WhenDataIsValid_ShouldUpdateSuccessfully() {
+    void updateUser() {
         Long id = 1L;
 
         UserUpdateRequest request = new UserUpdateRequest(
                 "pedro",
-                "pedro@email.com",
-                "1234"
+                "pedro@email.com"
         );
 
         User existingUser = new User(
@@ -129,7 +145,6 @@ public class UserServiceTest {
             return null;
         }).when(userMapper).updateToEntity(Mockito.eq(request), Mockito.eq(existingUser));
 
-        Mockito.when(passwordEncoder.encode("1234")).thenReturn("encodedPass");
         Mockito.when(repository.save(existingUser)).thenReturn(updatedUser);
 
         User result = service.updateUser(id, request);
@@ -137,11 +152,9 @@ public class UserServiceTest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals("pedro", result.getName());
         Assertions.assertEquals("pedro@email.com", result.getEmail());
-        Assertions.assertEquals("encodedPass", result.getPassword());
 
         Mockito.verify(repository).findById(id);
         Mockito.verify(userMapper).updateToEntity(request, existingUser);
-        Mockito.verify(passwordEncoder).encode("1234");
         Mockito.verify(repository).save(existingUser);
     }
 }

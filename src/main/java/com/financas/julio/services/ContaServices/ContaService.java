@@ -4,6 +4,7 @@ import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
 import com.financas.julio.dto.contaDTO.ContaResponse;
 import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.mappers.ContaMapper;
+import com.financas.julio.model.Categoria;
 import com.financas.julio.model.Conta;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.ContaRepository;
@@ -38,12 +39,12 @@ public class ContaService {
 
 
     @Transactional
-    public Conta insertConta(ContaRegisterRequest request){
-        validarUsuarioExiste(request.usuarioId());
-        validarLimiteDeContas(request.usuarioId());
-        validarNomeDuplicado(request.usuarioId(), request.name());
+    public Conta insertConta(ContaRegisterRequest request, Long usuarioId){
+        validarUsuarioExiste(usuarioId);
+        validarLimiteDeContas(usuarioId);
+        validarNomeDuplicado(usuarioId, request.name());
 
-        User usuario = userRepository.getReferenceById(request.usuarioId());
+        User usuario = userRepository.getReferenceById(usuarioId);
         Conta conta = mapper.toEntity(request);
         conta.setUser(usuario);
         logger.info("Trying to register a user account");
@@ -51,12 +52,8 @@ public class ContaService {
     }
 
     @Transactional
-    public void deleteConta(Long id){
-        Conta existingAccount = findAccountOrThrow(id);
-        if (existingAccount.getId() == null){
-            logger.info("Resource with id "+id+ " was deleted");
-            contaRepository.deleteById(id);
-        }
+    public void deleteConta(Long id, Long usuarioId){
+        Conta conta = buscarContaValidandoDono(id, usuarioId);
         try {
             logger.info("Resource with id "+id+ " was deleted");
             contaRepository.deleteById(id);
@@ -68,16 +65,17 @@ public class ContaService {
         }
     }
 
-    public Conta findById(Long id){
-        return contaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    public Conta findById(Long contaId, Long usuarioId){
+        return buscarContaValidandoDono(contaId, usuarioId);
     }
 
     public BigDecimal getSaldoTotal(Long userId){
         return contaRepository.getSaldoTotalByUserId(userId);
     }
 
-    public Conta updateAccount(Long id, ContaUpdateRequest request){
-        Conta existingAccount = findAccountOrThrow(id);
+    public Conta updateAccount(Long id, ContaUpdateRequest request,Long usuarioId){
+
+        Conta existingAccount = buscarContaValidandoDono(id, usuarioId);
         try {
             logger.info("Updating account with id: " + id);
             mapper.updateToEntity(request, existingAccount);
@@ -117,6 +115,16 @@ public class ContaService {
         if (contaRepository.existsByUserIdAndNameIgnoreCase(usuarioId, nomeConta)) {
             throw new RegraNegocioException("Já existe uma conta cadastrada com o nome '" + nomeConta + "'");
         }
+    }
+
+    private Conta buscarContaValidandoDono(Long contaId, Long usuarioLogadoId) {
+        Conta conta = contaRepository.findById(contaId)
+                .orElseThrow(() -> new ResourceNotFoundException(contaId));
+        if (!conta.getUser().getId().equals(usuarioLogadoId)) {
+            throw new RegraNegocioException("Você não tem permissão para interagir com essa conta.");
+        }
+
+        return conta;
     }
 
     private Conta findAccountOrThrow(Long id){

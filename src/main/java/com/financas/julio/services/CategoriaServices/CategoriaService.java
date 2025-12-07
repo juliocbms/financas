@@ -40,7 +40,6 @@ public class CategoriaService {
 
     @Transactional
     public Categoria insertCategoria(CategoriaRegisterRequest request){
-        validarUsuarioExiste(request.usuarioId());
         validarNomeDuplicado(request.usuarioId(), request.name());
 
         Categoria categoria = mapper.toEntity(request);
@@ -70,8 +69,7 @@ public class CategoriaService {
     }
 
     public Categoria findById(Long categoriaId, Long usuarioId){
-        buscarCategoriaValidandoDono(categoriaId,usuarioId);
-       return categoriaRepository.findById(categoriaId).orElseThrow(() -> new ResourceNotFoundException(categoriaId));
+        return buscarCategoriaValidandoDono(categoriaId, usuarioId);
     }
 
     public List<Categoria> findByName(Long usuarioId, String name) {
@@ -81,12 +79,6 @@ public class CategoriaService {
     public List<CategoriaResponse> listarCategorias(Long userId) {
         List<Categoria> categorias = categoriaRepository.findAllByUserIdOrPublic(userId);
         return mapper.toResponseList(categorias);
-    }
-
-    private void validarUsuarioExiste(Long usuarioId) {
-        if (!userRepository.existsById(usuarioId)) {
-            throw new EntityNotFoundException("Usuário não encontrado com id: " + usuarioId);
-        }
     }
 
     private void validarNomeDuplicado(Long usuarioId, String nome) {

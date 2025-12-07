@@ -54,10 +54,6 @@ public class UserService {
 
     public void deleteUser(Long id){
         User existingUser = findUserOrThrow(id);
-        if (existingUser.getId() == null){
-            logger.warn("Resource Not Found with id: " + id);
-            throw new ResourceNotFoundException(id);
-        }
         try {
             logger.info("Resource with id "+id+ " was deleted");
             repository.deleteById(id);
@@ -79,9 +75,6 @@ public class UserService {
         try {
             logger.info("Updating user with id: " + id);
             mapper.updateToEntity(request, existingUser);
-            if (request.password() != null && !request.password().isBlank()) {
-                existingUser.setPassword(passwordEncoder.encode(request.password()));
-            }
             return repository.save(existingUser);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid arguments");

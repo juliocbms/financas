@@ -5,10 +5,12 @@ import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
+import com.financas.julio.model.User;
 import com.financas.julio.services.CategoriaServices.CategoriaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,37 +30,37 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request){
+    public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal User usuarioLogado){
         Categoria inserteddCategoria = categoriaService.insertCategoria(request);
         CategoriaResponse response = mapper.toResponse(inserteddCategoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<CategoriaResponse>> listarPorUsuario(@PathVariable Long usuarioId) {
+    @GetMapping
+    public ResponseEntity<List<CategoriaResponse>> listarPorUsuario(@AuthenticationPrincipal User usuarioLogado) {
 
-        List<CategoriaResponse> categorias = categoriaService.listarCategorias(usuarioId);
+        List<CategoriaResponse> categorias = categoriaService.listarCategorias(usuarioLogado.getId());
 
         return ResponseEntity.ok(categorias);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @RequestParam Long usuarioId,@RequestBody CategoriaUpdateRequest request) {
-        Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, usuarioId);
+    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado,@RequestBody CategoriaUpdateRequest request) {
+        Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, usuarioLogado.getId());
         CategoriaResponse response = mapper.toResponse(updatedCategoria);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @RequestParam Long usuarioId) {
-        categoriaService.deleteCategoria(id, usuarioId);
+    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado) {
+        categoriaService.deleteCategoria(id, usuarioLogado.getId());
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<CategoriaResponse>> findCategoriaByName(@RequestParam Long usuarioId, @RequestParam String name){
+    public ResponseEntity<List<CategoriaResponse>> findCategoriaByName(@AuthenticationPrincipal User usuarioLogado, @RequestParam String name){
 
-        List<Categoria> categorias = categoriaService.findByName(usuarioId, name);
+        List<Categoria> categorias = categoriaService.findByName(usuarioLogado.getId(), name);
         List<CategoriaResponse> response = categorias.stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
@@ -67,8 +69,8 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @RequestParam Long usuarioId){
-        Categoria categoria = categoriaService.findById(id,usuarioId);
+    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @AuthenticationPrincipal User usuarioLogado){
+        Categoria categoria = categoriaService.findById(id,usuarioLogado.getId());
         CategoriaResponse response = mapper.toResponse(categoria);
         return ResponseEntity.ok(response);
     }
