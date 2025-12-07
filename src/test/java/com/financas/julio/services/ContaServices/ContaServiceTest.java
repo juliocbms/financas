@@ -43,8 +43,6 @@ class ContaServiceTest {
     @Mock
     UserRepository userRepository;
 
-    @Mock
-    UserService userService;
 
     @BeforeEach
     void setUp() {
