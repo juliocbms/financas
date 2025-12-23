@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
-public record ContaRegisterRequest(@NotNull(message = "O ID do usuário é obrigatório")
-                                   Long usuarioId,
+public record ContaRegisterRequest(
 
                                    @NotBlank(message = "O nome da conta não pode estar vazio")
                                    @Size(min = 3, max = 120, message = "O nome deve ter entre 3 e 120 caracteres")

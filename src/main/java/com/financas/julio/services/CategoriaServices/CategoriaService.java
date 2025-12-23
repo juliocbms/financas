@@ -39,12 +39,12 @@ public class CategoriaService {
 
 
     @Transactional
-    public Categoria insertCategoria(CategoriaRegisterRequest request){
-        validarNomeDuplicado(request.usuarioId(), request.name());
+    public Categoria insertCategoria(CategoriaRegisterRequest request, Long usuarioLogadoId){
+        validarNomeDuplicado(usuarioLogadoId, request.name());
 
         Categoria categoria = mapper.toEntity(request);
 
-        User user = userRepository.getReferenceById(request.usuarioId());
+        User user = userRepository.getReferenceById(usuarioLogadoId);
         categoria.setUser(user);
         logger.info("Trying to register a category");
         return categoriaRepository.save(categoria);

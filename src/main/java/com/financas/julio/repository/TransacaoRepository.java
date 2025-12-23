@@ -10,6 +10,11 @@ import java.util.List;
 
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
-    @Query("SELECT t FROM Transacao t WHERE t.user.id = :userId")
-    List<Transacao> findAllByUSerId(@Param("userId") Long userId);
+    @Query("""
+        SELECT t FROM Transacao t
+        JOIN FETCH t.conta c
+        LEFT JOIN FETCH t.categoria cat
+        WHERE t.user.id = :usuarioId
+    """)
+    List<Transacao> findAllByUSerId(@Param("usuarioId") Long userId);
 }

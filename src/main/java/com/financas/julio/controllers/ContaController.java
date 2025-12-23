@@ -2,6 +2,7 @@ package com.financas.julio.controllers;
 
 import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
 import com.financas.julio.dto.contaDTO.ContaResponse;
+import com.financas.julio.dto.contaDTO.ContaSaldoResponse;
 import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.mappers.ContaMapper;
 import com.financas.julio.model.Conta;
@@ -42,9 +43,10 @@ public class ContaController {
     }
 
     @GetMapping("/usuario/total")
-    public ResponseEntity<BigDecimal> getSaldoTotalByUserId(@Valid @AuthenticationPrincipal User usuarioLogado){
+    public ResponseEntity<ContaSaldoResponse> getSaldoTotalByUserId(@Valid @AuthenticationPrincipal User usuarioLogado){
         BigDecimal saldoTotal = contaService.getSaldoTotal(usuarioLogado.getId());
-        return ResponseEntity.ok(saldoTotal);
+        ContaSaldoResponse response = mapper.saldoToResponse(saldoTotal);
+        return ResponseEntity.ok(response);
     }
 
 

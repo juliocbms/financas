@@ -15,6 +15,6 @@ public interface ContaRepository extends JpaRepository<Conta,Long> {
 
     long countByUserId(Long userId);
 
-    @Query("SELECT COALESCE(SUM(c.saldoAtual), 0) FROM Conta c WHERE c.user.id = :userId")
-    BigDecimal getSaldoTotalByUserId(Long userId);
+    @Query("SELECT COALESCE(SUM(c.saldoAtual), 0) FROM Conta c WHERE c.user.id = :usuarioId")
+    BigDecimal getSaldoTotalByUserId(Long usuarioId);
 }

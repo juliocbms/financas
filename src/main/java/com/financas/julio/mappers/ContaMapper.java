@@ -2,10 +2,12 @@ package com.financas.julio.mappers;
 
 import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
 import com.financas.julio.dto.contaDTO.ContaResponse;
+import com.financas.julio.dto.contaDTO.ContaSaldoResponse;
 import com.financas.julio.dto.contaDTO.ContaUpdateRequest;
 import com.financas.julio.model.Conta;
 import org.mapstruct.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -31,4 +33,8 @@ public interface ContaMapper {
     Conta updateToEntity(ContaUpdateRequest request, @MappingTarget Conta entity);
 
     List<ContaResponse> toResponseList(List<Conta> contas);
+
+    default ContaSaldoResponse saldoToResponse(BigDecimal saldoTotal) {
+        return new ContaSaldoResponse(saldoTotal);
+    }
 }

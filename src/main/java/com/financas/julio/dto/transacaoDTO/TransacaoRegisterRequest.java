@@ -12,8 +12,6 @@ import java.time.LocalDate;
 
 public record TransacaoRegisterRequest(
 
-        @NotNull(message = "O ID do usuário é obrigatório")
-        Long usuarioId,
 
         @NotNull(message = "A conta é obrigatória")
         Long contaId,

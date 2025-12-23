@@ -48,9 +48,6 @@ public class TransacaoService {
         }
         Transacao transacao = mapper.toEntity(request);
 
-        if (request.tipo() != TipoTransacao.TRANSFERENCIA && request.categoriaId() == null) {
-            throw new RegraNegocioException("A categoria é obrigatória para Receitas e Despesas.");
-        }
         if (request.categoriaId() != null) {
             if (!categoriaRepository.existsById(request.categoriaId())) {
                 throw new ResourceNotFoundException(request.categoriaId());
@@ -62,7 +59,8 @@ public class TransacaoService {
         User user = userRepository.getReferenceById(usuarioId);
         transacao.setUser(user);
 
-        atualizarSaldoDaConta(conta, transacao.getValor(), transacao.getTipo());
+        conta.aplicarTransacao(transacao.getTipo(), transacao.getValor());
+
         transacao.setConta(conta);
         contaRepository.save(conta);
 
@@ -79,8 +77,16 @@ public class TransacaoService {
 
     @Transactional
     public Transacao updateSelfTransacao(Long transacaoId, TransacaoUpdateRequest request, Long usuarioId){
-        Transacao transacao = buscarTransacaoValidandoDono(transacaoId,usuarioId);
+        Transacao transacao = buscarTransacaoValidandoDono(transacaoId, usuarioId);
+        Conta conta = transacao.getConta();
+
+        conta.estornarTransacao(transacao.getTipo(), transacao.getValor());
+
         mapper.updateToEntity(request, transacao);
+
+        conta.aplicarTransacao(transacao.getTipo(), transacao.getValor());
+
+        contaRepository.save(conta);
         return transacaoRepository.save(transacao);
     }
 
@@ -88,25 +94,14 @@ public class TransacaoService {
     public void deleteSelfTransacao(Long transacaoId, Long usuarioId){
         Transacao transacao = buscarTransacaoValidandoDono(transacaoId,usuarioId);
         Conta conta = transacao.getConta();
-        if (transacao.getTipo() == TipoTransacao.RECEITA) {
-            conta.setSaldoAtual(conta.getSaldoAtual().subtract(transacao.getValor()));
-        } else {
-            conta.setSaldoAtual(conta.getSaldoAtual().add(transacao.getValor()));
-        }
+
+        conta.estornarTransacao(transacao.getTipo(), transacao.getValor());
 
         contaRepository.save(conta);
         transacaoRepository.delete(transacao);
 
     }
 
-    private void atualizarSaldoDaConta(Conta conta, BigDecimal valorTransacao, TipoTransacao tipo) {
-        BigDecimal saldoAtual = conta.getSaldoAtual();
-        if (tipo == TipoTransacao.RECEITA) {
-            conta.setSaldoAtual(saldoAtual.add(valorTransacao));
-        } else if (tipo == TipoTransacao.DESPESA || tipo == TipoTransacao.TRANSFERENCIA) {
-            conta.setSaldoAtual(saldoAtual.subtract(valorTransacao));
-        }
-    }
 
     private Transacao buscarTransacaoValidandoDono(Long transacaoId, Long usuarioLogadoId) {
         Transacao transacao = transacaoRepository.findById(transacaoId)

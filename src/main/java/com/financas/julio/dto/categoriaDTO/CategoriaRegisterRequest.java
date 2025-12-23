@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record CategoriaRegisterRequest(@NotNull(message = "O ID do usuário é obrigatório")
-                                       Long usuarioId,
-
+public record CategoriaRegisterRequest(
                                        @NotBlank(message = "O nome da categoria é obrigatório")
                                        @Size(min = 3, max = 120, message = "O nome deve ter entre 3 e 120 caracteres")
                                        String name,

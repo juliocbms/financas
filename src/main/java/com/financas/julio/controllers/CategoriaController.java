@@ -31,7 +31,7 @@ public class CategoriaController {
 
     @PostMapping
     public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal User usuarioLogado){
-        Categoria inserteddCategoria = categoriaService.insertCategoria(request);
+        Categoria inserteddCategoria = categoriaService.insertCategoria(request, usuarioLogado.getId());
         CategoriaResponse response = mapper.toResponse(inserteddCategoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

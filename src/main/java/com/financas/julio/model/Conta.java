@@ -118,6 +118,22 @@ public class Conta {
         this.atualizadoEm = atualizadoEm;
     }
 
+    public void aplicarTransacao(TipoTransacao tipo, BigDecimal valor) {
+        if (tipo == TipoTransacao.RECEITA) {
+            this.saldoAtual = this.saldoAtual.add(valor);
+        } else {
+            this.saldoAtual = this.saldoAtual.subtract(valor);
+        }
+    }
+
+    public void estornarTransacao(TipoTransacao tipo, BigDecimal valor) {
+        if (tipo == TipoTransacao.RECEITA) {
+            this.saldoAtual = this.saldoAtual.subtract(valor);
+        } else {
+            this.saldoAtual = this.saldoAtual.add(valor);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

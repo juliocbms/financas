@@ -49,7 +49,7 @@ class CategoriaServiceTest {
         Long usuarioId = 1L;
         String nomeCategoria = "Lazer";
 
-        CategoriaRegisterRequest request = new CategoriaRegisterRequest(usuarioId, nomeCategoria, TipoCategoria.RECEITA);
+        CategoriaRegisterRequest request = new CategoriaRegisterRequest( nomeCategoria, TipoCategoria.RECEITA);
         User user = new User();
         user.setId(usuarioId);
 
@@ -65,7 +65,7 @@ class CategoriaServiceTest {
 
         Mockito.when(categoriaRepository.save(categoria)).thenReturn(categoria);
 
-        Categoria result = service.insertCategoria(request);
+        Categoria result = service.insertCategoria(request, usuarioId);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(nomeCategoria, result.getName());
