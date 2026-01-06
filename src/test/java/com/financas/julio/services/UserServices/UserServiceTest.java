@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
@@ -32,13 +31,14 @@ class UserServiceTest {
     UserRepository repository;
 
     @Mock
-    UserMapper userMapper;
+    UserMapper mapper;
 
     @Mock
     PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
+        service = new UserService(repository, mapper, passwordEncoder);
     }
 
     @Test
@@ -64,7 +64,7 @@ class UserServiceTest {
         );
 
         Mockito.when(repository.existsByEmail(request.email())).thenReturn(false);
-        Mockito.when(userMapper.toEntity(request)).thenReturn(userEntity);
+        Mockito.when(mapper.toEntity(request)).thenReturn(userEntity);
         Mockito.when(passwordEncoder.encode("1234")).thenReturn("encodedPass");
         Mockito.when(repository.save(Mockito.any(User.class))).thenReturn(savedUser);
 
@@ -76,7 +76,7 @@ class UserServiceTest {
         Assertions.assertEquals("encodedPass", result.getPassword());
 
         Mockito.verify(repository).existsByEmail(request.email());
-        Mockito.verify(userMapper).toEntity(request);
+        Mockito.verify(mapper).toEntity(request);
         Mockito.verify(passwordEncoder).encode("1234");
         Mockito.verify(repository).save(Mockito.any(User.class));
 
@@ -137,24 +137,26 @@ class UserServiceTest {
 
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(existingUser));
 
+        Mockito.when(repository.save(Mockito.any(User.class))).thenReturn(updatedUser);
+
         Mockito.doAnswer(invocation -> {
             UserUpdateRequest req = invocation.getArgument(0);
             User user = invocation.getArgument(1);
             user.setName(req.name());
             user.setEmail(req.email());
             return null;
-        }).when(userMapper).updateToEntity(Mockito.eq(request), Mockito.eq(existingUser));
+        }).when(mapper).updateToEntity(Mockito.eq(request), Mockito.any(User.class));
 
-        Mockito.when(repository.save(existingUser)).thenReturn(updatedUser);
+
 
         User result = service.updateUser(id, request);
 
-        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result, "O resultado não deveria ser nulo. Verifique se o mock do repository.save está sendo chamado corretamente.");
         Assertions.assertEquals("pedro", result.getName());
         Assertions.assertEquals("pedro@email.com", result.getEmail());
 
         Mockito.verify(repository).findById(id);
-        Mockito.verify(userMapper).updateToEntity(request, existingUser);
+        Mockito.verify(mapper).updateToEntity(request, existingUser);
         Mockito.verify(repository).save(existingUser);
     }
 }

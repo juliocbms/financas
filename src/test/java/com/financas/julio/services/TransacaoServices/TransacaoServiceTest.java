@@ -69,7 +69,6 @@ class TransacaoServiceTest {
         categoria.setName("Alimentacao");
 
         TransacaoRegisterRequest request = new TransacaoRegisterRequest(
-                usuarioId,
                 contaId,
                 categoriaId,
                 TipoTransacao.RECEITA,
@@ -161,6 +160,7 @@ class TransacaoServiceTest {
         Conta conta = new Conta();
         conta.setId(contaId);
         conta.setUser(user);
+        conta.setSaldoInicial(new BigDecimal("1000.00"));
 
         Categoria categoria = new Categoria();
         categoria.setId(categoriaId);
@@ -168,6 +168,7 @@ class TransacaoServiceTest {
         Transacao transacaoAntiga = new Transacao();
         transacaoAntiga.setId(transacaoId);
         transacaoAntiga.setUser(user);
+        transacaoAntiga.setConta(conta);
         transacaoAntiga.setValor(new BigDecimal(50));
 
         TransacaoUpdateRequest request = new TransacaoUpdateRequest(
@@ -183,6 +184,7 @@ class TransacaoServiceTest {
 
         Mockito.when(transacaoRepository.findById(transacaoId)).thenReturn(Optional.of(transacaoAntiga));
         Mockito.when(transacaoRepository.save(Mockito.any(Transacao.class))).thenReturn(transacaoAtualizada);
+
 
         Transacao result = service.updateSelfTransacao(transacaoId, request, usuarioId);
 

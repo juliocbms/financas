@@ -39,7 +39,6 @@ public class UserService {
             throw new EmailAlreadyExistsException(request.email());
         }
         User newUser = mapper.toEntity(request);
-        newUser.setcreatedAt(LocalDateTime.now());
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         logger.info("Trying to register user");
         try {
