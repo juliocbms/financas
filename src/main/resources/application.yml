@@ -2,7 +2,9 @@ spring:
   application:
     name: julio
   cors:
-    origins: "http://localhost:4200", "http://localhost:3000"
+    origins:
+      - http://localhost:4200
+      - http://localhost:3000
   datasource:
     url: jdbc:postgresql://localhost:5432/financas
     username: postgres
@@ -24,3 +26,5 @@ api:
   security:
     token:
       secret: meu-segredo-super-secreto-e-longo-para-gerar-tokens
+
+

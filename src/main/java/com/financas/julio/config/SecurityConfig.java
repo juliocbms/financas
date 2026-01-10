@@ -20,18 +20,20 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${cors.origins}")
-    private String corsOrigins;
+
 
     private final SecurityFilter securityFilter;
+    private final CorsProperties corsProperties;
 
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(SecurityFilter securityFilter, CorsProperties corsProperties) {
         this.securityFilter = securityFilter;
+        this.corsProperties = corsProperties;
     }
 
     @Bean
@@ -54,7 +56,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(corsOrigins.split(",")));
+        configuration.setAllowedOrigins(corsProperties.getOrigins());
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
 
