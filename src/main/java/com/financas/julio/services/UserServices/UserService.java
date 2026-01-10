@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -30,6 +31,11 @@ public class UserService {
         this.repository = repository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<User> findAll(){
+        logger.info("Finding all People!");
+        return repository.findAll();
     }
 
     @Transactional

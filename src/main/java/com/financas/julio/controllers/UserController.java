@@ -14,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -65,5 +68,15 @@ public class UserController {
         User findedUser = service.findById(user.getId());
         UserRegisterResponse response = mapper.toResponse(findedUser);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserRegisterResponse>> findAll(User user){
+        List<User> findedUsers = service.findAll();
+        List<UserRegisterResponse> responses = findedUsers.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responses);
     }
 }
