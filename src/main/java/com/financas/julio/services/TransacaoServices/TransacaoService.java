@@ -12,10 +12,13 @@ import com.financas.julio.services.exception.RegraNegocioException;
 import com.financas.julio.services.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,10 +74,29 @@ public class TransacaoService {
         return buscarTransacaoValidandoDono(id, usuarioId);
     }
 
-    public List<Transacao> findAllByUSerId(Long usuarioId){
-        return transacaoRepository.findAllByUSerId(usuarioId);
-    }
+    public Page<Transacao> listarComFiltros(
+            Long userId,
+            String termo,
+            TipoTransacao tipo,
+            LocalDate inicio,
+            LocalDate fim,
+            Pageable pageable) {
 
+        String termoFiltrado = null;
+
+        if (termo != null && !termo.isBlank()) {
+            termoFiltrado = "%" + termo.toLowerCase() + "%";
+        }
+
+        return transacaoRepository.findAllByFilters(
+                userId,
+                termoFiltrado,
+                tipo,
+                inicio,
+                fim,
+                pageable
+        );
+    }
     @Transactional
     public Transacao updateSelfTransacao(Long transacaoId, TransacaoUpdateRequest request, Long usuarioId){
         Transacao transacao = buscarTransacaoValidandoDono(transacaoId, usuarioId);
