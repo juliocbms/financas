@@ -26,5 +26,7 @@ api:
   security:
     token:
       secret: meu-segredo-super-secreto-e-longo-para-gerar-tokens
+springdoc:
+  enable-hateoas: false
 
 

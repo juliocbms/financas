@@ -1,5 +1,6 @@
 package com.financas.julio.services.UserServices;
 
+import com.financas.julio.controllers.UserController;
 import com.financas.julio.dto.userDTO.UserRegisterRequest;
 import com.financas.julio.dto.userDTO.UserUpdateRequest;
 import com.financas.julio.mappers.UserMapper;
@@ -10,7 +11,15 @@ import com.financas.julio.services.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +34,9 @@ public class UserService {
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    PagedResourcesAssembler<User> assembler;
+
     private Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 
     public UserService(UserRepository repository, UserMapper mapper, PasswordEncoder passwordEncoder) {
@@ -33,9 +45,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> findAll(){
-        logger.info("Finding all People!");
-        return repository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Transactional
@@ -70,6 +81,8 @@ public class UserService {
         }
 
     }
+
+
 
     public User findById(Long id){
       return findUserOrThrow(id);
