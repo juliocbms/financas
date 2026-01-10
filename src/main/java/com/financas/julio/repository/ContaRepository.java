@@ -1,6 +1,8 @@
 package com.financas.julio.repository;
 
 import com.financas.julio.model.Conta;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,7 +13,7 @@ public interface ContaRepository extends JpaRepository<Conta,Long> {
 
     boolean existsByUserIdAndNameIgnoreCase(Long userId, String name);
 
-    List<Conta> findByUserId(Long userId);
+    Page<Conta> findByUserId(Long userId, Pageable pageable);
 
     long countByUserId(Long userId);
 

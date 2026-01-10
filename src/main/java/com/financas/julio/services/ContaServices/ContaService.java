@@ -16,6 +16,8 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -89,9 +91,9 @@ public class ContaService {
         }
     }
 
-    public List<Conta> myAccounts( Long usuarioId){
+    public Page<Conta> myAccounts(Long usuarioId, Pageable pageable){
         validarUsuarioExiste(usuarioId);
-        return contaRepository.findByUserId(usuarioId);
+        return contaRepository.findByUserId(usuarioId,pageable);
     }
 
 
