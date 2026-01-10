@@ -5,6 +5,7 @@ import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
 import com.financas.julio.mappers.CategoriaMapper;
 import com.financas.julio.model.Categoria;
+import com.financas.julio.model.TipoCategoria;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.CategoriaRepository;
 import com.financas.julio.repository.ContaRepository;
@@ -15,6 +16,8 @@ import com.financas.julio.services.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,13 +75,24 @@ public class CategoriaService {
         return buscarCategoriaValidandoDono(categoriaId, usuarioId);
     }
 
-    public List<Categoria> findByName(Long usuarioId, String name) {
-        return categoriaRepository.findCategoriaByName(usuarioId, name);
-    }
 
-    public List<CategoriaResponse> listarCategorias(Long userId) {
-        List<Categoria> categorias = categoriaRepository.findAllByUserIdOrPublic(userId);
-        return mapper.toResponseList(categorias);
+    public Page<Categoria> listarCategorias(
+            Long userId,
+            String name,
+            TipoCategoria tipoCategoria,
+            Pageable pageable) {
+        String nomeFiltrado = name;
+        if (name != null && !name.isBlank()) {
+            nomeFiltrado = "%" + name.toLowerCase() + "%";
+        }
+
+
+        return categoriaRepository.findCategoriasFiltradas(
+                userId,
+                nomeFiltrado,
+                tipoCategoria,
+                pageable
+        );
     }
 
     private void validarNomeDuplicado(Long usuarioId, String nome) {
