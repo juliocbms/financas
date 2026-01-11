@@ -43,17 +43,29 @@ public class TransacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<TransacaoResponse> criarUmaTransacaoParaUmUsuario(@Valid @RequestBody TransacaoRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<TransacaoResponse>> criarUmaTransacaoParaUmUsuario(@Valid @RequestBody TransacaoRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
         Transacao insertedTransacao = transacaoService.insertTransacao(request,tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(insertedTransacao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        EntityModel<TransacaoResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(TransacaoController.class).findById(response.id(), tokenData)).withSelfRel()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransacaoResponse> editarSuaPropriaTransacao(@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData, @RequestBody TransacaoUpdateRequest request){
+    public ResponseEntity<EntityModel<TransacaoResponse>> editarSuaPropriaTransacao(@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData, @RequestBody TransacaoUpdateRequest request){
         Transacao updatedTransacao = transacaoService.updateSelfTransacao(id,request,tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(updatedTransacao);
-        return ResponseEntity.ok(response);
+
+        EntityModel<TransacaoResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(TransacaoController.class).findById(response.id(), tokenData)).withSelfRel()
+        );
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @DeleteMapping("/{id}")
@@ -63,10 +75,16 @@ public class TransacaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransacaoResponse> findById(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<TransacaoResponse>> findById(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
         Transacao transacao = transacaoService.findById(id, tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(transacao);
-        return ResponseEntity.ok(response);
+
+        EntityModel<TransacaoResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(TransacaoController.class).findById(response.id(), tokenData)).withSelfRel()
+        );
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/usuario")
