@@ -46,10 +46,15 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<CategoriaResponse>> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
         Categoria inserteddCategoria = categoriaService.insertCategoria(request, tokenData.userId());
         CategoriaResponse response = mapper.toResponse(inserteddCategoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        EntityModel<CategoriaResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(CategoriaController.class).findCategoriaById(response.id(), tokenData)).withSelfRel()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
 
     @GetMapping
@@ -77,10 +82,15 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData,@RequestBody CategoriaUpdateRequest request) {
+    public ResponseEntity<EntityModel<CategoriaResponse>> atualizar(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData,@RequestBody CategoriaUpdateRequest request) {
         Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, tokenData.userId());
         CategoriaResponse response = mapper.toResponse(updatedCategoria);
-        return ResponseEntity.ok(response);
+
+        EntityModel<CategoriaResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(CategoriaController.class).findCategoriaById(response.id(), tokenData)).withSelfRel()
+        );
+        return ResponseEntity.ok(entityModel);
     }
 
     @DeleteMapping("/{id}")
@@ -91,9 +101,15 @@ public class CategoriaController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<CategoriaResponse>> findCategoriaById (@PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
         Categoria categoria = categoriaService.findById(id,tokenData.userId());
         CategoriaResponse response = mapper.toResponse(categoria);
-        return ResponseEntity.ok(response);
+
+        EntityModel<CategoriaResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(CategoriaController.class).findCategoriaById(response.id(), tokenData)).withSelfRel()
+        );
+
+        return ResponseEntity.ok(entityModel);
     }
 }
