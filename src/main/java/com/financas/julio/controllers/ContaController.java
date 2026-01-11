@@ -43,10 +43,15 @@ public class ContaController {
     }
 
     @PostMapping
-    public ResponseEntity<ContaResponse> criarContaParaUmUsuario(@Valid @RequestBody ContaRegisterRequest request, @AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<ContaResponse>> criarContaParaUmUsuario(@Valid @RequestBody ContaRegisterRequest request, @AuthenticationPrincipal JWTUserData tokenData){
         Conta insertedConta = contaService.insertConta(request,tokenData.userId());
         ContaResponse response = mapper.toResponse(insertedConta);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        EntityModel<ContaResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(ContaController.class).findById(response.id(), tokenData)).withSelfRel()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
 
     @DeleteMapping("/{id}")
@@ -64,17 +69,28 @@ public class ContaController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContaResponse> updateAccount (@Valid @RequestBody ContaUpdateRequest request, @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<ContaResponse>> updateAccount (@Valid @RequestBody ContaUpdateRequest request, @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
         Conta updateAccount = contaService.updateAccount(id, request, tokenData.userId());
         ContaResponse response = mapper.toResponse(updateAccount);
-        return ResponseEntity.ok(response);
+
+        EntityModel<ContaResponse> entityModel = EntityModel.of(
+                response,
+                linkTo(methodOn(ContaController.class).findById(id, tokenData)).withSelfRel()
+        );
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ContaResponse> findById (@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
+    public ResponseEntity<EntityModel<ContaResponse>> findById (@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
         Conta findedConta = contaService.findById(id, tokenData.userId());
         ContaResponse response = mapper.toResponse(findedConta);
-        return ResponseEntity.ok(response);
+
+                        EntityModel<ContaResponse> entityModel = EntityModel.of(
+                                response,
+                                linkTo(methodOn(ContaController.class).findById(id, tokenData)).withSelfRel()
+                        );
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @GetMapping("/usuario")
