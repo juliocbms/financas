@@ -55,8 +55,14 @@ public class TransacaoService {
             if (!categoriaRepository.existsById(request.categoriaId())) {
                 throw new ResourceNotFoundException(request.categoriaId());
             }
+
             Categoria categoria = categoriaRepository.getReferenceById(request.categoriaId());
+            if (categoria.getUser() != null && !categoria.getUser().getId().equals(usuarioId)) {
+                throw new RegraNegocioException("Essa categoria não pertence a você.");
+            }
+
             transacao.setCategoria(categoria);
+
         }
 
         User user = userRepository.getReferenceById(usuarioId);
@@ -102,11 +108,21 @@ public class TransacaoService {
         Transacao transacao = buscarTransacaoValidandoDono(transacaoId, usuarioId);
         Conta conta = transacao.getConta();
 
+        if (!conta.getUser().getId().equals(usuarioId)) {
+            throw new RegraNegocioException("Essa conta não pertence a você.");
+        }
+
         conta.estornarTransacao(transacao.getTipo(), transacao.getValor());
 
         mapper.updateToEntity(request, transacao);
 
         conta.aplicarTransacao(transacao.getTipo(), transacao.getValor());
+
+        Categoria categoria = categoriaRepository.getReferenceById(request.categoriaId());
+        if (categoria.getUser() != null && !categoria.getUser().getId().equals(usuarioId)) {
+            throw new RegraNegocioException("Essa categoria não pertence a você.");
+        }
+
 
         contaRepository.save(conta);
         return transacaoRepository.save(transacao);
@@ -130,11 +146,11 @@ public class TransacaoService {
                 .orElseThrow(() -> new ResourceNotFoundException(transacaoId));
 
         if (transacao.getUser() == null) {
-            throw new RegraNegocioException("Você não tem permissão para alterar ou excluir categorias padrão do sistema.");
+            throw new RegraNegocioException("Você não tem permissão para alterar ou excluir essa transação");
         }
 
         if (!transacao.getUser().getId().equals(usuarioLogadoId)) {
-            throw new RegraNegocioException("Esta categoria pertence a outro usuário e você não pode mexer nela.");
+            throw new RegraNegocioException("Esta transação pertence a outro usuário e você não pode mexer nela.");
         }
 
         return transacao;
