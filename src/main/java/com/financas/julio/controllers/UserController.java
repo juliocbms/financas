@@ -1,5 +1,6 @@
 package com.financas.julio.controllers;
 
+import com.financas.julio.config.JWTUserData;
 import com.financas.julio.config.TokenConfig;
 import com.financas.julio.dto.userDTO.*;
 import com.financas.julio.mappers.UserMapper;
@@ -63,28 +64,28 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteUser( @AuthenticationPrincipal User user){
-        service.deleteUser(user.getId());
+    public ResponseEntity<Void> deleteUser( @AuthenticationPrincipal JWTUserData tokenData){
+        service.deleteUser(tokenData.userId());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserRegisterResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request,  @AuthenticationPrincipal User user){
-        User updatedUser = service.updateUser(user.getId(), request);
+    public ResponseEntity<UserRegisterResponse> updateUSer (@Valid @RequestBody UserUpdateRequest request,  @AuthenticationPrincipal JWTUserData tokenData){
+        User updatedUser = service.updateUser(tokenData.userId(), request);
         UserRegisterResponse response = mapper.toResponse(updatedUser);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserRegisterResponse> findById(@Valid @AuthenticationPrincipal User user){
-        User findedUser = service.findById(user.getId());
+    public ResponseEntity<UserRegisterResponse> findById(@Valid @AuthenticationPrincipal JWTUserData tokenData){
+        User findedUser = service.findById(tokenData.userId());
         UserRegisterResponse response = mapper.toResponse(findedUser);
         return ResponseEntity.ok(response);
     }
 
 
     @GetMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserRegisterResponse> findUserById(@Valid @PathVariable Long id){
         User findedUser = service.findById(id);
         UserRegisterResponse response = mapper.toResponse(findedUser);
@@ -92,6 +93,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedModel<EntityModel<UserRegisterResponse>>>findAll(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,

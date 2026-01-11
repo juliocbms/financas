@@ -1,5 +1,6 @@
 package com.financas.julio.controllers;
 
+import com.financas.julio.config.JWTUserData;
 import com.financas.julio.dto.categoriaDTO.CategoriaRegisterRequest;
 import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.dto.categoriaDTO.CategoriaUpdateRequest;
@@ -45,14 +46,14 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal User usuarioLogado){
-        Categoria inserteddCategoria = categoriaService.insertCategoria(request, usuarioLogado.getId());
+    public ResponseEntity<CategoriaResponse> insertCategoria(@Valid @RequestBody CategoriaRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
+        Categoria inserteddCategoria = categoriaService.insertCategoria(request, tokenData.userId());
         CategoriaResponse response = mapper.toResponse(inserteddCategoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<PagedModel<EntityModel<CategoriaResponse>>> listarPorUsuario(@AuthenticationPrincipal User usuarioLogado,
+    public ResponseEntity<PagedModel<EntityModel<CategoriaResponse>>> listarPorUsuario(@AuthenticationPrincipal JWTUserData tokenData,
            @RequestParam(value = "page", defaultValue = "0") Integer page,
            @RequestParam(required = false) String name,
            @RequestParam(required = false) TipoCategoria tipoCategoria,
@@ -62,13 +63,13 @@ public class CategoriaController {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC: Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page,size, Sort.by(sortDirection,"name"));
 
-        Page<Categoria> categorias = categoriaService.listarCategorias(usuarioLogado.getId(),name,tipoCategoria,pageable);
+        Page<Categoria> categorias = categoriaService.listarCategorias(tokenData.userId(),name,tipoCategoria,pageable);
 
         PagedModel<EntityModel<CategoriaResponse>> responses =
                 assembler.toModel(
                         categorias,
                         categoria -> EntityModel.of(mapper.toResponse(categoria),linkTo(methodOn(CategoriaController.class)
-                                .findCategoriaById(categoria.getId(),usuarioLogado))
+                                .findCategoriaById(categoria.getId(),tokenData))
                                 .withSelfRel())
                 );
 
@@ -76,22 +77,22 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado,@RequestBody CategoriaUpdateRequest request) {
-        Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, usuarioLogado.getId());
+    public ResponseEntity<CategoriaResponse> atualizar(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData,@RequestBody CategoriaUpdateRequest request) {
+        Categoria updatedCategoria = categoriaService.updateSelfCategoria(id, request, tokenData.userId());
         CategoriaResponse response = mapper.toResponse(updatedCategoria);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado) {
-        categoriaService.deleteCategoria(id, usuarioLogado.getId());
+    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData) {
+        categoriaService.deleteCategoria(id, tokenData.userId());
         return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @AuthenticationPrincipal User usuarioLogado){
-        Categoria categoria = categoriaService.findById(id,usuarioLogado.getId());
+    public ResponseEntity<CategoriaResponse> findCategoriaById (@PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
+        Categoria categoria = categoriaService.findById(id,tokenData.userId());
         CategoriaResponse response = mapper.toResponse(categoria);
         return ResponseEntity.ok(response);
     }

@@ -1,5 +1,6 @@
 package com.financas.julio.controllers;
 
+import com.financas.julio.config.JWTUserData;
 import com.financas.julio.dto.contaDTO.ContaRegisterRequest;
 import com.financas.julio.dto.contaDTO.ContaResponse;
 import com.financas.julio.dto.contaDTO.ContaSaldoResponse;
@@ -42,42 +43,42 @@ public class ContaController {
     }
 
     @PostMapping
-    public ResponseEntity<ContaResponse> criarContaParaUmUsuario(@Valid @RequestBody ContaRegisterRequest request, @AuthenticationPrincipal User usuarioLogado){
-        Conta insertedConta = contaService.insertConta(request,usuarioLogado.getId());
+    public ResponseEntity<ContaResponse> criarContaParaUmUsuario(@Valid @RequestBody ContaRegisterRequest request, @AuthenticationPrincipal JWTUserData tokenData){
+        Conta insertedConta = contaService.insertConta(request,tokenData.userId());
         ContaResponse response = mapper.toResponse(insertedConta);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id,@AuthenticationPrincipal User usuarioLogado){
-        contaService.deleteConta(id,usuarioLogado.getId());
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
+        contaService.deleteConta(id,tokenData.userId());
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/usuario/total")
-    public ResponseEntity<ContaSaldoResponse> getSaldoTotalByUserId(@Valid @AuthenticationPrincipal User usuarioLogado){
-        BigDecimal saldoTotal = contaService.getSaldoTotal(usuarioLogado.getId());
+    public ResponseEntity<ContaSaldoResponse> getSaldoTotalByUserId(@Valid @AuthenticationPrincipal JWTUserData tokenData){
+        BigDecimal saldoTotal = contaService.getSaldoTotal(tokenData.userId());
         ContaSaldoResponse response = mapper.saldoToResponse(saldoTotal);
         return ResponseEntity.ok(response);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContaResponse> updateAccount (@Valid @RequestBody ContaUpdateRequest request, @PathVariable Long id,@AuthenticationPrincipal User usuarioLogado){
-        Conta updateAccount = contaService.updateAccount(id, request, usuarioLogado.getId());
+    public ResponseEntity<ContaResponse> updateAccount (@Valid @RequestBody ContaUpdateRequest request, @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
+        Conta updateAccount = contaService.updateAccount(id, request, tokenData.userId());
         ContaResponse response = mapper.toResponse(updateAccount);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ContaResponse> findById (@Valid @PathVariable Long id,@AuthenticationPrincipal User usuarioLogado){
-        Conta findedConta = contaService.findById(id, usuarioLogado.getId());
+    public ResponseEntity<ContaResponse> findById (@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData){
+        Conta findedConta = contaService.findById(id, tokenData.userId());
         ContaResponse response = mapper.toResponse(findedConta);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario")
-    public ResponseEntity<PagedModel<EntityModel<ContaResponse>>> accountsForUser(@Valid @AuthenticationPrincipal User usuarioLogado,
+    public ResponseEntity<PagedModel<EntityModel<ContaResponse>>> accountsForUser(@Valid @AuthenticationPrincipal JWTUserData tokenData,
            @RequestParam(value = "page", defaultValue = "0") Integer page,
            @RequestParam(value = "size", defaultValue = "12") Integer size,
            @RequestParam(value = "direction", defaultValue = "asc") String direction){
@@ -85,13 +86,13 @@ public class ContaController {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC: Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page,size, Sort.by(sortDirection,"name"));
 
-        Page<Conta> contas = contaService.myAccounts(usuarioLogado.getId(),pageable);
+        Page<Conta> contas = contaService.myAccounts(tokenData.userId(),pageable);
 
         PagedModel<EntityModel<ContaResponse>> responses =
                 assembler.toModel(
                         contas,
                         conta -> EntityModel.of(mapper.toResponse(conta),linkTo(methodOn(ContaController.class)
-                                .findById(conta.getId(),usuarioLogado))
+                                .findById(conta.getId(),tokenData))
                                 .withSelfRel())
                 );
         return ResponseEntity.ok(responses);

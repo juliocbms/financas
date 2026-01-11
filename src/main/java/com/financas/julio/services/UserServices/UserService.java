@@ -4,6 +4,7 @@ import com.financas.julio.controllers.UserController;
 import com.financas.julio.dto.userDTO.UserRegisterRequest;
 import com.financas.julio.dto.userDTO.UserUpdateRequest;
 import com.financas.julio.mappers.UserMapper;
+import com.financas.julio.model.Role;
 import com.financas.julio.model.User;
 import com.financas.julio.repository.UserRepository;
 import com.financas.julio.services.exception.EmailAlreadyExistsException;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -57,6 +59,7 @@ public class UserService {
         }
         User newUser = mapper.toEntity(request);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        newUser.setRoles(Collections.singleton(Role.ROLE_USER));
         logger.info("Trying to register user");
         try {
             return repository.save(newUser);

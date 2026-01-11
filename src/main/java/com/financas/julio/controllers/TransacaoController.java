@@ -1,5 +1,6 @@
 package com.financas.julio.controllers;
 
+import com.financas.julio.config.JWTUserData;
 import com.financas.julio.dto.categoriaDTO.CategoriaResponse;
 import com.financas.julio.dto.transacaoDTO.TransacaoRegisterRequest;
 import com.financas.julio.dto.transacaoDTO.TransacaoResponse;
@@ -42,34 +43,34 @@ public class TransacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<TransacaoResponse> criarUmaTransacaoParaUmUsuario(@Valid @RequestBody TransacaoRegisterRequest request,@AuthenticationPrincipal User usuarioLogado){
-        Transacao insertedTransacao = transacaoService.insertTransacao(request,usuarioLogado.getId());
+    public ResponseEntity<TransacaoResponse> criarUmaTransacaoParaUmUsuario(@Valid @RequestBody TransacaoRegisterRequest request,@AuthenticationPrincipal JWTUserData tokenData){
+        Transacao insertedTransacao = transacaoService.insertTransacao(request,tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(insertedTransacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransacaoResponse> editarSuaPropriaTransacao(@Valid @PathVariable Long id,@AuthenticationPrincipal User usuarioLogado, @RequestBody TransacaoUpdateRequest request){
-        Transacao updatedTransacao = transacaoService.updateSelfTransacao(id,request,usuarioLogado.getId());
+    public ResponseEntity<TransacaoResponse> editarSuaPropriaTransacao(@Valid @PathVariable Long id,@AuthenticationPrincipal JWTUserData tokenData, @RequestBody TransacaoUpdateRequest request){
+        Transacao updatedTransacao = transacaoService.updateSelfTransacao(id,request,tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(updatedTransacao);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado){
-        transacaoService.deleteSelfTransacao(id,usuarioLogado.getId());
+    public ResponseEntity<Void> deletar(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
+        transacaoService.deleteSelfTransacao(id,tokenData.userId());
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransacaoResponse> findById(@Valid @PathVariable Long id, @AuthenticationPrincipal User usuarioLogado){
-        Transacao transacao = transacaoService.findById(id, usuarioLogado.getId());
+    public ResponseEntity<TransacaoResponse> findById(@Valid @PathVariable Long id, @AuthenticationPrincipal JWTUserData tokenData){
+        Transacao transacao = transacaoService.findById(id, tokenData.userId());
         TransacaoResponse response = transacaoMapper.toResponse(transacao);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario")
-    public ResponseEntity<PagedModel<EntityModel<TransacaoResponse>>> findAllById(@Valid@AuthenticationPrincipal User usuarioLogado,
+    public ResponseEntity<PagedModel<EntityModel<TransacaoResponse>>> findAllById(@Valid@AuthenticationPrincipal JWTUserData tokenData,
            @RequestParam(value = "page", defaultValue = "0") Integer page,
            @RequestParam(value = "size", defaultValue = "12") Integer size,
            @RequestParam(required = false) String termo,
@@ -81,7 +82,7 @@ public class TransacaoController {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC: Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page,size, Sort.by(sortDirection,"titulo"));
 
-        Page<Transacao> transacoes = transacaoService.listarComFiltros(usuarioLogado.getId(),
+        Page<Transacao> transacoes = transacaoService.listarComFiltros(tokenData.userId(),
                 termo,
                 tipo,
                 dataInicio,
@@ -91,8 +92,8 @@ public class TransacaoController {
         PagedModel<EntityModel<TransacaoResponse>> responses =
                 assembler.toModel(
                         transacoes,
-                        transacao -> EntityModel.of(transacaoMapper.toResponse(transacao),linkTo(methodOn(CategoriaController.class)
-                                .findCategoriaById(transacao.getId(),usuarioLogado))
+                        transacao -> EntityModel.of(transacaoMapper.toResponse(transacao),linkTo(methodOn(TransacaoController.class)
+                                .findById(transacao.getId(),tokenData))
                                 .withSelfRel())
                 );
 
