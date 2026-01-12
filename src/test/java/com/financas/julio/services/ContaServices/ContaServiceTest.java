@@ -15,6 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -120,12 +124,20 @@ class ContaServiceTest {
 
     @Test
     void myAccounts() {
-        when(userRepository.existsById(anyLong())).thenReturn(true);
-        when(contaRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(existingConta));
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<Conta> result = service.myAccounts(1L);
+        Page<Conta> pageDeContas = new PageImpl<>(Collections.singletonList(existingConta));
+
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+
+        when(contaRepository.findByUserId(anyLong(), any(Pageable.class)))
+                .thenReturn(pageDeContas);
+
+        Page<Conta> result = service.myAccounts(userId, pageable);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
+        assertEquals(1, result.getTotalElements());
+        assertEquals(existingConta, result.getContent().get(0));
     }
 }

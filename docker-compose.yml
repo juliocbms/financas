@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres:18.1
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: financas
+    ports:
+      - "3308:5432"
+    expose:
+      - 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+    networks:
+      - financas-network
+  financas:
+    image: juliocbms/financas
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/financas
+      SPRING_DATASOURCE_USERNAME: docker
+      SPRING_DATASOURCE_PASSWORD: admin123
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    networks:
+      - financas-network
+networks:
+  financas-network:
+    driver: bridge
+volumes:
+  postgres_data:

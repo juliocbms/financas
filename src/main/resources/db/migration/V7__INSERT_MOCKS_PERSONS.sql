@@ -1,3 +1,7 @@
+
+
+
+
  insert into tb_usuario
   (nome, email, senha_hash, criado_em)
   values

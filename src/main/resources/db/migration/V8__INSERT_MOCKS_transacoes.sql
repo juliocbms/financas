@@ -1,3 +1,9 @@
+INSERT INTO tb_categoria (id, usuario_id, nome, tipo)
+VALUES (15, 51, 'Alimentação', 'DESPESA');
+
+INSERT INTO tb_conta (id, usuario_id, nome, tipo_conta, saldo_inicial, saldo_atual, criado_em, atualizado_em)
+VALUES (18, 51, 'Banco Inter', 'CONTA_CORRENTE', 1000.00, 1000.00, '2025-01-01 10:00:00', '2025-01-01 10:00:00');
+
  insert into tb_transacao (usuario_id, conta_id, categoria_id, tipo, valor, data, titulo, descricao) values
   (51, 18, 15, 'RECEITA', 19, '2025-09-01', 'leo rhoncus sed vestibulum sit amet cursus id turpis integer aliquet', 'nulla pede ullamcorper augue a suscipit nulla elit ac nulla sed vel enim sit amet nunc viverra dapibus nulla'),
   (51, 18, 15, 'DESPESA', 76, '2025-07-31', 'maecenas rhoncus aliquam lacus morbi quis tortor id nulla ultrices aliquet maecenas', 'malesuada in imperdiet et commodo vulputate justo in blandit ultrices enim lorem ipsum dolor sit amet consectetuer adipiscing'),

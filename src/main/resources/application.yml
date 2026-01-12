@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   application:
     name: julio
@@ -17,6 +19,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+
+
 logging:
   level:
     root: WARN
@@ -28,5 +32,8 @@ api:
       secret: meu-segredo-super-secreto-e-longo-para-gerar-tokens
 springdoc:
   enable-hateoas: false
+  swagger-ui:
+      path: /swagger-ui.html
+      disable-swagger-default-url: true
 
 

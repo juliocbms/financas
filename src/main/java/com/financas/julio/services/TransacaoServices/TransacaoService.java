@@ -103,6 +103,7 @@ public class TransacaoService {
                 pageable
         );
     }
+
     @Transactional
     public Transacao updateSelfTransacao(Long transacaoId, TransacaoUpdateRequest request, Long usuarioId){
         Transacao transacao = buscarTransacaoValidandoDono(transacaoId, usuarioId);

@@ -18,6 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -144,42 +148,34 @@ class CategoriaServiceTest {
         Assertions.assertEquals(categoriaId, result.getId());
     }
 
-    @Test
-    void findByName() {
-        Long usuarioId = 1L;
-        String nomeBusca = "Saude";
-
-        Categoria cat1 = new Categoria();
-        cat1.setName("Saude");
-        List<Categoria> lista = List.of(cat1);
-
-        Mockito.when(categoriaRepository.findCategoriaByName(usuarioId, nomeBusca)).thenReturn(lista);
-
-        List<Categoria> result = service.findByName(usuarioId, nomeBusca);
-
-        Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals("Saude", result.get(0).getName());
-    }
 
     @Test
     void listarCategorias() {
         Long usuarioId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
         Categoria cat1 = new Categoria();
         cat1.setId(10L);
+        cat1.setName("teste");
+
         List<Categoria> listaEntidades = List.of(cat1);
+        Page<Categoria> pageRetorno = new PageImpl<>(listaEntidades);
 
-        CategoriaResponse responseDTO = new CategoriaResponse(10L, usuarioId, "teste",TipoCategoria.RECEITA);
-        List<CategoriaResponse> listaDTO = List.of(responseDTO);
+        Mockito.when(categoriaRepository.findCategoriasFiltradas(
+                Mockito.eq(usuarioId),
+                Mockito.isNull(),
+                Mockito.isNull(),
+                Mockito.eq(pageable))
+        ).thenReturn(pageRetorno);
 
-        Mockito.when(categoriaRepository.findAllByUserIdOrPublic(usuarioId)).thenReturn(listaEntidades);
-        Mockito.when(mapper.toResponseList(listaEntidades)).thenReturn(listaDTO);
+        Page<Categoria> result = service.listarCategorias(usuarioId, null, null, pageable);
 
-        List<CategoriaResponse> result = service.listarCategorias(usuarioId);
-
+        Assertions.assertNotNull(result);
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(10L, result.get(0).id());
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(10L, result.getContent().get(0).getId());
+
+        Mockito.verify(categoriaRepository, Mockito.times(1))
+                .findCategoriasFiltradas(usuarioId, null, null, pageable);
     }
 }

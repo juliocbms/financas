@@ -16,6 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -131,21 +135,36 @@ class TransacaoServiceTest {
     }
 
     @Test
-    void findAllByUSerId() {
+    void listarComFiltros() {
         Long usuarioId = 2L;
+
+        Pageable pageable = PageRequest.of(0, 10);
+
         User user = new User(usuarioId, "julio", "julio@email.com", "1234", null);
         Transacao transacao = new Transacao();
         transacao.setUser(user);
 
         List<Transacao> lista = List.of(transacao);
+        Page<Transacao> pageRetorno = new PageImpl<>(lista);
 
-        Mockito.when(transacaoRepository.findAllByUSerId(usuarioId)).thenReturn(lista);
+        Mockito.when(transacaoRepository.findAllByFilters(
+                Mockito.eq(usuarioId),
+                Mockito.isNull(),
+                Mockito.isNull(),
+                Mockito.isNull(),
+                Mockito.isNull(),
+                Mockito.eq(pageable)
+        )).thenReturn(pageRetorno);
 
-        List<Transacao> result = service.findAllByUSerId(usuarioId);
+        Page<Transacao> result = service.listarComFiltros(usuarioId, null, null, null, null, pageable);
 
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(1, result.size());
-        Mockito.verify(transacaoRepository).findAllByUSerId(usuarioId);
+        Assertions.assertEquals(1, result.getTotalElements());
+
+
+        Mockito.verify(transacaoRepository).findAllByFilters(
+                usuarioId, null, null, null, null, pageable
+        );
     }
 
     @Test
@@ -164,15 +183,17 @@ class TransacaoServiceTest {
 
         Categoria categoria = new Categoria();
         categoria.setId(categoriaId);
+        categoria.setUser(user);
 
         Transacao transacaoAntiga = new Transacao();
         transacaoAntiga.setId(transacaoId);
         transacaoAntiga.setUser(user);
         transacaoAntiga.setConta(conta);
         transacaoAntiga.setValor(new BigDecimal(50));
+        transacaoAntiga.setTipo(TipoTransacao.DESPESA);
 
         TransacaoUpdateRequest request = new TransacaoUpdateRequest(
-                new BigDecimal(100), "Novo Titulo", "Nova Descricao", null, TipoTransacao.RECEITA, categoriaId, contaId
+                new BigDecimal(100), "Novo Titulo", "Nova Descricao", null, TipoTransacao.DESPESA, categoriaId, contaId
         );
 
         Transacao transacaoAtualizada = new Transacao();
@@ -181,15 +202,30 @@ class TransacaoServiceTest {
         transacaoAtualizada.setValor(new BigDecimal(100));
         transacaoAtualizada.setTitulo("Novo Titulo");
 
-
         Mockito.when(transacaoRepository.findById(transacaoId)).thenReturn(Optional.of(transacaoAntiga));
-        Mockito.when(transacaoRepository.save(Mockito.any(Transacao.class))).thenReturn(transacaoAtualizada);
 
+        Mockito.when(categoriaRepository.getReferenceById(categoriaId)).thenReturn(categoria);
+
+        Mockito.doAnswer(invocation -> {
+            TransacaoUpdateRequest req = invocation.getArgument(0);
+            Transacao entity = invocation.getArgument(1);
+            entity.setValor(req.valor());
+            entity.setTitulo(req.titulo());
+            return null;
+        }).when(transacaoMapper).updateToEntity(request, transacaoAntiga);
+
+        Mockito.when(contaRepository.save(Mockito.any(Conta.class))).thenReturn(conta);
+
+        Mockito.when(transacaoRepository.save(Mockito.any(Transacao.class))).thenReturn(transacaoAtualizada);
 
         Transacao result = service.updateSelfTransacao(transacaoId, request, usuarioId);
 
         Assertions.assertEquals(new BigDecimal(100), result.getValor());
         Assertions.assertEquals("Novo Titulo", result.getTitulo());
+
+
+        Mockito.verify(categoriaRepository).getReferenceById(categoriaId);
+        Mockito.verify(contaRepository).save(conta);
         Mockito.verify(transacaoRepository).save(Mockito.any(Transacao.class));
     }
 
