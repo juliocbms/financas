@@ -8,9 +8,9 @@ spring:
       - http://localhost:4200
       - http://localhost:3000
   datasource:
-    url: jdbc:postgresql://localhost:5432/financas
-    username: postgres
-    password: root
+    url: jdbc:postgresql://financas-db-server.c2l0qye6qvgv.us-east-1.rds.amazonaws.com/financas
+    username: root
+    password: Jc1533157!
 
   jpa:
     hibernate:
