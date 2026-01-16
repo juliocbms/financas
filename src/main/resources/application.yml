@@ -8,7 +8,7 @@ spring:
       - http://localhost:4200
       - http://localhost:3000
   datasource:
-    url: jdbc:postgresql://financas-db-server.c2l0qye6qvgv.us-east-1.rds.amazonaws.com/financas
+    url: ${JDBC_URL}
     username: root
     password: Jc1533157!
 
