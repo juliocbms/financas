@@ -1,0 +1,1 @@
+[![Continuous Integration and Delivery with GitHub Actions](https://github.com/juliocbms/financas/actions/workflows/continuous-deployment.yml/badge.svg?branch=main)](https://github.com/juliocbms/financas/actions/workflows/continuous-deployment.yml)
